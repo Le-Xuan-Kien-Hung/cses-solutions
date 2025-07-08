@@ -37,66 +37,27 @@ const ll LINF = 0x3f3f3f3f3f3f3f3f;
 const int INF = 1e9 + 9 ; 
 // ================================================================================================================
 
-
-vector<int> g[maxN] ; 
-int dep[maxN] ; 
-int up[maxN][20] ;
-int n , q ; 
+int n ;
+vector<int> g[maxN] ;
+int siz[maxN] ; 
 void dfs(int u , int p = -1) {
 	for(auto &v : g[u]) if(v ^ p) {
-		dep[v] = dep[u] + 1 ;
-		dfs(v , u) ;
-		up[v][0] = u ;
-	}	
-}
-void prepare(void) {
+		dfs(v , u) ; 
+		siz[u] += (siz[v] + 1) ;  
+	}
+} 
+void solve() {
+	cin >> n ;
+	FOR(i , 2 , n) {
+		int p ; cin >> p ; 
+		g[i].emplace_back(p) ; 
+		g[p].emplace_back(i) ; 
+	}
+
 	dfs(1) ; 
 
-	int q = __lg(n) ;
-	for(int k = 1 ; k <= q ; ++k) for(int i = 1 ; i <= n ; i++) {
-		up[i][k] = up[up[i][k - 1]][k - 1] ; 
-	}
-}
-
-int getLCA(int u , int v) {
-	if(dep[u] != dep[v]) {
-		if(dep[u] < dep[v]) swap(u , v) ;
-
-		int dif = dep[u] - dep[v] ; 
-		for(int i = 0 ; (1 << i) <= dif ; ++i) {
-			if(dif >> i & 1) u = up[u][i] ; 
-		}
-	}
-
-	if(u == v) return u ;
-
-	int k = __lg(dep[u]) ;
-	for(int i = k ; i >= 0 ; i--) {
-		if(up[u][i] != up[v][i]) 
-			u = up[u][i] , 
-			v = up[v][i] ;
-	}
-
-	return up[u][0] ; 
-}
-int getLen(int u , int v) {
-	int p = getLCA(u , v) ; 
-	return dep[u] + dep[v] - 2 * dep[p] ; 
-}
-void solve() {
-	cin >> n >> q ; 
-	FOR(i , 2 , n) {
-		int u , v ; 
-		cin >> u >> v ;
-		g[u].emplace_back(v) ;
-		g[v].emplace_back(u) ; 
-	}
-
-	prepare() ;
-
-	while(q--) {
-		int u , v ; cin >> u >> v ;
-		cout << getLen(u , v) << '\n' ; 
+	FOR(i , 1 , n) {
+		cout << siz[i] << ' ' ; 
 	}
 }
 signed main(){

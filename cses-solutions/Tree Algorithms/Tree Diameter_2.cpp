@@ -38,66 +38,42 @@ const int INF = 1e9 + 9 ;
 // ================================================================================================================
 
 
+int n ; 
 vector<int> g[maxN] ; 
-int dep[maxN] ; 
-int up[maxN][20] ;
-int n , q ; 
+int d[maxN] ; 
 void dfs(int u , int p = -1) {
 	for(auto &v : g[u]) if(v ^ p) {
-		dep[v] = dep[u] + 1 ;
-		dfs(v , u) ;
-		up[v][0] = u ;
-	}	
-}
-void prepare(void) {
-	dfs(1) ; 
-
-	int q = __lg(n) ;
-	for(int k = 1 ; k <= q ; ++k) for(int i = 1 ; i <= n ; i++) {
-		up[i][k] = up[up[i][k - 1]][k - 1] ; 
+		d[v] = d[u] + 1 ; 
+		dfs(v , u) ; 
 	}
 }
+void solve() {
+	cin >> n ;
+	FOR(i , 2 , n) {
+		int u , v ; cin >> u >> v ;
+		g[u].emplace_back(v) ;
+		g[v].emplace_back(u) ;
+	}
 
-int getLCA(int u , int v) {
-	if(dep[u] != dep[v]) {
-		if(dep[u] < dep[v]) swap(u , v) ;
+	dfs(1) ; 
 
-		int dif = dep[u] - dep[v] ; 
-		for(int i = 0 ; (1 << i) <= dif ; ++i) {
-			if(dif >> i & 1) u = up[u][i] ; 
+	int ma = 0 , id = 1 ; 
+	for(int i = 2 ; i <= n ; i++) {
+		if(d[i] > ma) {
+			ma = d[i] ;
+			id = i ; 
 		}
 	}
 
-	if(u == v) return u ;
+	// cout << ma << ' ' << id << '\n' ; 
+	memset(d , 0 , sizeof d) ; 
+	dfs(id) ; 
 
-	int k = __lg(dep[u]) ;
-	for(int i = k ; i >= 0 ; i--) {
-		if(up[u][i] != up[v][i]) 
-			u = up[u][i] , 
-			v = up[v][i] ;
+	for(int i = 1 ; i <= n ; i++) {
+		ma = max(ma , d[i]) ; 
 	}
 
-	return up[u][0] ; 
-}
-int getLen(int u , int v) {
-	int p = getLCA(u , v) ; 
-	return dep[u] + dep[v] - 2 * dep[p] ; 
-}
-void solve() {
-	cin >> n >> q ; 
-	FOR(i , 2 , n) {
-		int u , v ; 
-		cin >> u >> v ;
-		g[u].emplace_back(v) ;
-		g[v].emplace_back(u) ; 
-	}
-
-	prepare() ;
-
-	while(q--) {
-		int u , v ; cin >> u >> v ;
-		cout << getLen(u , v) << '\n' ; 
-	}
+	cout << ma << '\n' ; 
 }
 signed main(){
     freopen(""); 

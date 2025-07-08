@@ -100,7 +100,7 @@ void solve() {
 	}
 }
 signed main(){
-    freopen(""); 
+    freopen("Tree Diameter"); 
     FastIO;
     int numTest = 1 ;
     // cin >> numTest;
