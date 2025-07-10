@@ -39,34 +39,66 @@ const int INF = 1e9 + 9 ;
 
 
 int n ;
-vector<int> g[maxN] ;
-int h[maxN] ; 
-vector<int> aim ; // leaf node and 1 ; 
+vector<int> g[maxN] ; 
+int d[maxN] ;
+bool vis[maxN] ;  
 
-void dfs(int u , int p = -1) {
-	for(auto &v : g[u]) if(v ^ p) {
-		h[v] = h[u] + 1 ;
-		dfs(v , u) ; 
+void bfs(int u) {
+
+	FOR(i , 1 , n) d[i] = 0 , vis[i] = false ; 
+	queue<int> q ; 
+	q.emplace(u) ; 
+	vis[u] = true ; 
+	while(!q.empty()) {
+		int u = q.front() ; 
+		q.pop() ; 
+
+		for(auto &v : g[u]) {
+			if(vis[v]) continue ; 
+			vis[v] = true ; 
+			d[v] = d[u] + 1 ;
+			q.emplace(v) ; 
+		} 
 	}
 }
 void solve() {
 	cin >> n ;
 	FOR(i , 2 , n) {
 		int u , v ; cin >> u >> v ;
-		g[u].emplace_back(v) ;
+		g[u].emplace_back(v) ; 
 		g[v].emplace_back(u) ; 
 	}
 
-	dfs(1) ; 
 
-	aim.emplace_back(1) ; 
-	int ma =	 
+	bfs(1) ; 	
+
+	int ma = 0 , root1 = 1 , root2 = 1 ;
 	FOR(i , 1 , n) {
-
+		if(d[i] > ma) {
+			ma = d[i] ;
+			root1 = i ; 
+		}
 	}
+
+	bfs(root1) ; ma = 0 ; 
+
+	FOR(i , 1 , n) {
+		if(d[i] > ma) {
+			ma = d[i] ; 
+			root2 = i ;
+		}
+	}
+
+	vector<int> ans(n + 2 , -INF) ; 
+	FOR(i , 1 , n) ans[i] = max(ans[i] , d[i]) ; 
+
+	bfs(root2) ; 
+	FOR(i , 1 , n) ans[i] = max(ans[i] , d[i]) ; 
+
+	FOR(i , 1 , n) cout << ans[i] << ' ' ; 
 }
 signed main(){
-    freopen("Tree Distances I"); 
+    freopen(""); 
     FastIO;
     int numTest = 1 ;
     // cin >> numTest;
