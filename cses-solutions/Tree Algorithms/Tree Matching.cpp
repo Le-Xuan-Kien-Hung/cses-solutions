@@ -38,8 +38,27 @@ const int INF = 1e9 + 9 ;
 // ================================================================================================================
 
 
+int ans = 0 ; 
+int n ; 
+vector<int> g[maxN] ; 
+int c[maxN] ; 
+void dfs(int u , int p = -1) {
+    for(auto &v : g[u]) if(v ^ p) {
+        dfs(v , u) ; 
+        if(!c[v] and !c[u]) c[v] = c[u] = 1 , ++ans ; 
+    }
+}
 void solve() {
-	
+	cin >> n ;
+    FOR(i , 2 , n) {
+        int u , v ; cin >> u >> v ;
+        g[u].emplace_back(v) ;
+        g[v].emplace_back(u) ; 
+    }
+
+    dfs(1) ; 
+
+    cout << ans << '\n' ; 
 }
 signed main(){
     freopen("Tree Matching"); 
